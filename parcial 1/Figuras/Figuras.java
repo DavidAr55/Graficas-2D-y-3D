@@ -3,17 +3,17 @@ import javax.swing.*;
 import java.awt.Color;
 import java.awt.Graphics;
 
-public class casita extends JFrame {
+public class Figuras extends JFrame {
 
-    public casita() {
+    public Figuras() {
         setSize(500, 500); 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
     public static void main(String[] args) {
         
-        casita casita = new casita();
-        casita.setVisible(true);
+        Figuras figuras = new Figuras();
+        figuras.setVisible(true);
     }
 
     @Override
