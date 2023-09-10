@@ -601,5 +601,23 @@ public class Casita extends JFrame {
 
         g.setColor(Color.decode("#FFEBBE"));
         g.fillRect(160, 160, 10, 30);
+
+        /*SQUARE_SIZE = 5;
+        CIRCLE_RADIUS = 42;
+
+        g.setColor(Color.decode("#FaF5C9"));
+
+        circleCenterX = 250;
+        circleCenterY = 250;
+
+        for (int x = -CIRCLE_RADIUS; x <= CIRCLE_RADIUS; x++) {
+            for (int y = -CIRCLE_RADIUS; y <= CIRCLE_RADIUS; y++) {
+                if (x * x + y * y <= CIRCLE_RADIUS * CIRCLE_RADIUS) {
+                    int xPos = circleCenterX + x * SQUARE_SIZE;
+                    int yPos = circleCenterY + y * SQUARE_SIZE;
+                    g.fillRect(xPos, yPos, SQUARE_SIZE, SQUARE_SIZE);
+                }
+            }
+        }*/
     }
 }
