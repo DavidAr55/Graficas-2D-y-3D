@@ -107,45 +107,68 @@ public class Figuras extends JFrame {
         }
     }
 
-    public void drawEllipse(int centerX, int centerY, int a, int b, Color c) {
+    public void drawEllipse(int centerX, int centerY, int rx, int ry, Color c) {
+        double angleStep = 0.01; // Suavidad de la curva
+        for (double angle = 0; angle < 2 * Math.PI; angle += angleStep) {
+            int x = (int) (centerX + rx * Math.cos(angle));
+            int y = (int) (centerY + ry * Math.sin(angle));
+            putPixel(x, y, c);
+        }
+    }
+
+    // Algoritmo de Bresenham para dibujar un círculo
+    public void drawCircleBresenham(int centerX, int centerY, int radius, Color c) {
         int x = 0;
-        int y = b;
-        double a2 = a * a;
-        double b2 = b * b;
-        double d = b2 - a2 * (b - 0.25);
-        
-        while (b2 * (x + 1) < a2 * (y - 0.5)) {
-            putPixel(centerX + x, centerY - y, c);
-            putPixel(centerX - x, centerY - y, c);
+        int y = radius;
+        int d = 3 - 2 * radius;
+
+        while (x <= y) {
             putPixel(centerX + x, centerY + y, c);
             putPixel(centerX - x, centerY + y, c);
-            
+            putPixel(centerX + x, centerY - y, c);
+            putPixel(centerX - x, centerY - y, c);
+            putPixel(centerX + y, centerY + x, c);
+            putPixel(centerX - y, centerY + x, c);
+            putPixel(centerX + y, centerY - x, c);
+            putPixel(centerX - y, centerY - x, c);
+
             if (d < 0) {
-                d += b2 * (2 * x + 3);
+                d = d + 4 * x + 6;
             } else {
-                d += (b2 * (2 * x + 3) + a2 * (-2 * y + 2));
+                d = d + 4 * (x - y) + 10;
                 y--;
             }
             x++;
         }
-        
-        d = b2 * (x + 0.5) * (x + 0.5) + a2 * (y - 1) * (y - 1) - a2 * b2;
-        
-        while (y >= 0) {
-            putPixel(centerX + x, centerY - y, c);
-            putPixel(centerX - x, centerY - y, c);
-            putPixel(centerX + x, centerY + y, c);
-            putPixel(centerX - x, centerY + y, c);
-            
-            if (d < 0) {
-                d += b2 * (2 * x + 2) + a2 * (-2 * y + 3);
-                x++;
-            } else {
-                d += a2 * (-2 * y + 3);
+    }
+
+    // Algoritmo de Bresenham para dibujar una línea
+    public void drawLineBresenham(int x1, int y1, int x2, int y2, Color c) {
+        int dx = Math.abs(x2 - x1);
+        int dy = Math.abs(y2 - y1);
+        int sx = (x1 < x2) ? 1 : -1;
+        int sy = (y1 < y2) ? 1 : -1;
+        int err = dx - dy;
+
+        while (true) {
+            putPixel(x1, y1, c);
+
+            if (x1 == x2 && y1 == y2) {
+                break;
             }
-            y--;
+
+            int e2 = 2 * err;
+            if (e2 > -dy) {
+                err = err - dy;
+                x1 = x1 + sx;
+            }
+            if (e2 < dx) {
+                err = err + dx;
+                y1 = y1 + sy;
+            }
         }
-    }    
+    }
+   
 
     public static void main(String[] args) {
         Figuras figurasFrame = new Figuras();

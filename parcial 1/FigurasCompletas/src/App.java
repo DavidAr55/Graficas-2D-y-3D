@@ -23,7 +23,5 @@ public class App {
         figuras.drawEllipse(425, 235, 85, 40, Color.CYAN);
         figuras.drawEllipse(425, 235, 70, 30, Color.CYAN);
         figuras.drawEllipse(425, 235, 55, 20, Color.CYAN);
-
-        figuras.drawPolarCircle(450, 400, 60, Color.WHITE);
     }
 }
