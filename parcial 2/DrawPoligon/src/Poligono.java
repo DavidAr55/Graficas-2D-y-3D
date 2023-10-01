@@ -1,12 +1,10 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
-import java.util.Stack;
 
 public class Poligono extends JFrame {
     private BufferedImage buffer;
@@ -78,7 +76,7 @@ public class Poligono extends JFrame {
         repaint();
     }
 
-    public void fillPolygon(int[] xPoints, int[] yPoints, Color c) {
+    public void fillPolygonScanLine(int[] xPoints, int[] yPoints, Color c) {
         int minX = Integer.MAX_VALUE;
         int maxX = Integer.MIN_VALUE;
     
@@ -120,42 +118,108 @@ public class Poligono extends JFrame {
 
                 repaint();
 
+                /* try {
+                    Thread.sleep(50);
+                } catch (Exception e) {
+                    System.out.println(e);
+                } */
             }
         }
     }   
-    
-    public void fillPolygonInundation(int x, int y, Color fill_color, Color boundary_color) {
-        if (x < 0 || x >= getWidth() || y < 0 || y >= getHeight()) {
-            return; // Salir si estamos fuera de los límites de la ventana
+
+    public int[] calculateCentroid(int[] xPoints, int[] yPoints) {
+        int n = xPoints.length;
+        int cx = 0, cy = 0;
+        int area = 0;
+
+        for (int i = 0; i < n; i++) {
+            int x1 = xPoints[i];
+            int y1 = yPoints[i];
+            int x2 = xPoints[(i + 1) % n];
+            int y2 = yPoints[(i + 1) % n];
+
+            int partialArea = x1 * y2 - x2 * y1;
+            area += partialArea;
+            cx += (x1 + x2) * partialArea;
+            cy += (y1 + y2) * partialArea;
         }
 
-        int pixelColor = buffer.getRGB(x, y);
+        area /= 2;
+        cx /= (6 * area);
+        cy /= (6 * area);
 
-        if (pixelColor != boundary_color.getRGB() && pixelColor != fill_color.getRGB()) {
-            putPixel(x, y, fill_color);
-            fillPolygonInundation(x + 1, y, fill_color, boundary_color);
-            fillPolygonInundation(x - 1, y, fill_color, boundary_color);
-            fillPolygonInundation(x, y + 1, fill_color, boundary_color);
-            fillPolygonInundation(x, y - 1, fill_color, boundary_color);
+        int[] centroid = {cx, cy};
+
+        putPixel(cx, cy, Color.RED);
+        return centroid;
+    }
+
+    public void fillPolygonInundation(int[] centroid, int[] xPoints, int[] yPoints, Color fillColor) {
+    // Obtiene las coordenadas del centroide
+    int x = centroid[0];
+    int y = centroid[1];
+
+    // Obtiene el color del píxel en la coordenada (x, y)
+    Color pixelColor = new Color(buffer.getRGB(x, y));
+
+    // Verifica si el píxel en la coordenada (x, y) es parte del borde del polígono
+    if (!pixelColor.equals(fillColor)) {
+        // Inicializa una cola (queue) para el algoritmo de inundación
+        Queue<Integer> queue = new LinkedList<>();
+
+        // Agrega la coordenada (x, y) a la cola
+        queue.add(x);
+        queue.add(y);
+
+        // Mientras la cola no esté vacía
+        while (!queue.isEmpty()) {
+            // Desencola las coordenadas (x, y)
+            x = queue.poll();
+            y = queue.poll();
+
+            // Obtiene el color del píxel en la coordenada (x, y)
+            pixelColor = new Color(buffer.getRGB(x, y));
+
+            // Verifica si el píxel es parte del borde del polígono
+            if (!pixelColor.equals(fillColor)) {
+                // Colorea el píxel con el nuevo color
+                putPixel(x, y, fillColor);
+
+                // Agrega los vecinos (norte, este, sur, oeste) a la cola
+                queue.add(x);
+                queue.add(y + 1); // Norte
+                queue.add(x + 1);
+                queue.add(y);     // Este
+                queue.add(x);
+                queue.add(y - 1); // Sur
+                queue.add(x - 1);
+                queue.add(y);     // Oeste
+            }
+        }
+
+        // Actualiza la ventana con el nuevo relleno
+        repaint();
         }
     }
 
     public static void main(String[] args) {
         Poligono poligono = new Poligono();
         poligono.setVisible(true);
-
+    
         int[] xPoints = {100, 200, 250, 350, 300, 200};
         int[] yPoints = {100, 50, 150, 200, 300, 250};
-
+    
         poligono.drawPolygon(xPoints, yPoints, Color.BLUE);
-        poligono.fillPolygon(xPoints, yPoints, Color.RED);
+        poligono.fillPolygonScanLine(xPoints, yPoints, Color.RED);
+        
+        int[] xPoints2 = {(100 + 300), (200 + 300), (250 + 300), (350 + 300), (400 + 300), (350 + 300), (250 + 300), (200 + 300), (100 + 300)};
+        int[] yPoints2 = {100, 50, 150, 200, 300, 400, 350, 250, 200};
+        
+        
+        int[] centroid = poligono.calculateCentroid(xPoints2, yPoints2);
+        System.out.println("El centro del polígono está en: (" + centroid[0] + ", " + centroid[1] + ")");
 
-        /*int[] xPointsNext = {100, 150, 200, 300, 250, 200, 150, 100};
-        int[] yPointsNext = {100, 50, 100, 100, 200, 250, 300, 250};
-        Color fillColor = Color.BLUE;
-        Color borderColor = Color.BLACK;
-
-        poligono.drawPolygon(xPointsNext, yPointsNext, borderColor);
-        poligono.fillPolygonInundation(200, 200, fillColor, borderColor);*/
-    }
+        poligono.drawPolygon(xPoints2, yPoints2, Color.GREEN);
+        poligono.fillPolygonInundation(centroid, xPoints2, yPoints2, Color.PINK);
+    }    
 }
