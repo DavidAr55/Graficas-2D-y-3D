@@ -154,53 +154,47 @@ public class Poligono extends JFrame {
         return centroid;
     }
 
-    public void fillPolygonInundation(int[] centroid, int[] xPoints, int[] yPoints, Color fillColor) {
-    // Obtiene las coordenadas del centroide
-    int x = centroid[0];
-    int y = centroid[1];
+    public void fillPolygonInundation(int x, int y, Color fillColor) {
+        // Obtener el color del píxel en la posición (x, y)
+        Color currentColor = new Color(buffer.getRGB(x, y));
+    
+        // Obtener el color de llenado
+        Color targetColor = fillColor;
+    
+        // Verificar si el píxel ya tiene el color de llenado o es parte del borde
+        if (!currentColor.equals(targetColor) && !isEdgePixel(x, y, targetColor)) {
 
-    // Obtiene el color del píxel en la coordenada (x, y)
-    Color pixelColor = new Color(buffer.getRGB(x, y));
+            try {
+                Thread.sleep(50);
+                System.out.println("Se colocó un pixel correctamente");
+            } catch (Exception e) {
+                System.out.println(e);
+            } 
 
-    // Verifica si el píxel en la coordenada (x, y) es parte del borde del polígono
-    if (!pixelColor.equals(fillColor)) {
-        // Inicializa una cola (queue) para el algoritmo de inundación
-        Queue<Integer> queue = new LinkedList<>();
-
-        // Agrega la coordenada (x, y) a la cola
-        queue.add(x);
-        queue.add(y);
-
-        // Mientras la cola no esté vacía
-        while (!queue.isEmpty()) {
-            // Desencola las coordenadas (x, y)
-            x = queue.poll();
-            y = queue.poll();
-
-            // Obtiene el color del píxel en la coordenada (x, y)
-            pixelColor = new Color(buffer.getRGB(x, y));
-
-            // Verifica si el píxel es parte del borde del polígono
-            if (!pixelColor.equals(fillColor)) {
-                // Colorea el píxel con el nuevo color
-                putPixel(x, y, fillColor);
-
-                // Agrega los vecinos (norte, este, sur, oeste) a la cola
-                queue.add(x);
-                queue.add(y + 1); // Norte
-                queue.add(x + 1);
-                queue.add(y);     // Este
-                queue.add(x);
-                queue.add(y - 1); // Sur
-                queue.add(x - 1);
-                queue.add(y);     // Oeste
-            }
+            // Colorear el píxel con el nuevo color
+            putPixel(x, y, targetColor);
+    
+            // Llamar recursivamente a fillPolygonInundation para los píxeles adyacentes
+            fillPolygonInundation(x + 1, y, targetColor); // Este
+            fillPolygonInundation(x - 1, y, targetColor); // Oeste
+            fillPolygonInundation(x, y + 1, targetColor); // Norte
+            fillPolygonInundation(x, y - 1, targetColor); // Sur
         }
 
-        // Actualiza la ventana con el nuevo relleno
-        repaint();
+        else {
+            System.out.println("No entró al if");
         }
     }
+    
+    // Verifica si un píxel es parte del borde del polígono
+    private boolean isEdgePixel(int x, int y, Color targetColor) {
+        // Obtener el color del píxel en la posición (x, y)
+        Color currentColor = new Color(buffer.getRGB(x, y));
+    
+        // Compara el color del píxel con el color de borde (asumiendo que el borde tiene un color específico)
+        return !currentColor.equals(targetColor);
+    }
+     
 
     public static void main(String[] args) {
         Poligono poligono = new Poligono();
@@ -220,6 +214,6 @@ public class Poligono extends JFrame {
         System.out.println("El centro del polígono está en: (" + centroid[0] + ", " + centroid[1] + ")");
 
         poligono.drawPolygon(xPoints2, yPoints2, Color.GREEN);
-        poligono.fillPolygonInundation(centroid, xPoints2, yPoints2, Color.PINK);
+        poligono.fillPolygonInundation(centroid[0], centroid[1], Color.PINK);
     }    
 }
