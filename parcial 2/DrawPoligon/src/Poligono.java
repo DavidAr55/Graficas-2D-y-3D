@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Queue;
 
 public class Poligono extends JFrame {
+    
     private BufferedImage buffer;
     private Graphics2D graPixel;
 
@@ -79,35 +80,35 @@ public class Poligono extends JFrame {
     public void fillPolygonScanLine(int[] xPoints, int[] yPoints, Color c) {
         int minX = Integer.MAX_VALUE;
         int maxX = Integer.MIN_VALUE;
-    
+
         // Encontrar el rango horizontal del polígono
         for (int x : xPoints) {
             minX = Math.min(minX, x);
             maxX = Math.max(maxX, x);
         }
-    
+
         List<Integer> intersections = new ArrayList<>();
-    
+
         // Escanear cada línea vertical dentro del rango horizontal
         for (int x = minX; x <= maxX; x++) {
             intersections.clear();
-    
+
             for (int i = 0; i < xPoints.length; i++) {
                 int x1 = xPoints[i];
                 int y1 = yPoints[i];
                 int x2 = xPoints[(i + 1) % xPoints.length];
                 int y2 = yPoints[(i + 1) % xPoints.length];
-    
+
                 if ((x1 <= x && x2 > x) || (x2 <= x && x1 > x)) {
                     // Calcula la intersección vertical con la línea
                     double y = y1 + (double) (x - x1) * (y2 - y1) / (x2 - x1);
                     intersections.add((int) y);
                 }
             }
-    
+
             // Ordena las intersecciones de arriba a abajo
             intersections.sort(Integer::compareTo);
-    
+
             // Rellena el espacio entre las intersecciones
             for (int i = 0; i < intersections.size(); i += 2) {
                 int startY = intersections.get(i);
@@ -117,15 +118,9 @@ public class Poligono extends JFrame {
                 }
 
                 repaint();
-
-                /* try {
-                    Thread.sleep(50);
-                } catch (Exception e) {
-                    System.out.println(e);
-                } */
             }
         }
-    }   
+    }
 
     public int[] calculateCentroid(int[] xPoints, int[] yPoints) {
         int n = xPoints.length;
@@ -154,66 +149,76 @@ public class Poligono extends JFrame {
         return centroid;
     }
 
-    public void fillPolygonInundation(int x, int y, Color fillColor) {
-        // Obtener el color del píxel en la posición (x, y)
-        Color currentColor = new Color(buffer.getRGB(x, y));
-    
-        // Obtener el color de llenado
-        Color targetColor = fillColor;
-    
-        // Verificar si el píxel ya tiene el color de llenado o es parte del borde
-        if (!currentColor.equals(targetColor) && !isEdgePixel(x, y, targetColor)) {
+    public void fillPolygonInundation(int x, int y, Color fill, Color border) {
+        
+        if (x < 0 || x >= getWidth() || y < 0 || y >= getHeight()) {
+            return; // Fuera de los límites del área de dibujo
+        }
 
-            try {
-                Thread.sleep(50);
-                System.out.println("Se colocó un pixel correctamente");
+        if (findPixel(x, y, border) || findPixel(x, y, fill)) {
+            return; // Pixel en el borde o ya rellenado
+        }
+
+        Queue<Point> pointsToFill = new LinkedList<>();
+        pointsToFill.add(new Point(x, y));
+
+        while (!pointsToFill.isEmpty()) {
+            Point currentPoint = pointsToFill.poll();
+            x = currentPoint.x;
+            y = currentPoint.y;
+
+            if (x < 0 || x >= getWidth() || y < 0 || y >= getHeight() ||
+                    findPixel(x, y, border) || findPixel(x, y, fill)) {
+                continue;
+            }
+
+            /* try {
+                Thread.sleep(1);
             } catch (Exception e) {
-                System.out.println(e);
-            } 
+                // TODO: handle exception
+            } */
 
-            // Colorear el píxel con el nuevo color
-            putPixel(x, y, targetColor);
-    
-            // Llamar recursivamente a fillPolygonInundation para los píxeles adyacentes
-            fillPolygonInundation(x + 1, y, targetColor); // Este
-            fillPolygonInundation(x - 1, y, targetColor); // Oeste
-            fillPolygonInundation(x, y + 1, targetColor); // Norte
-            fillPolygonInundation(x, y - 1, targetColor); // Sur
-        }
+            // Colocamos el píxel para rellenar
+            putPixel(x, y, fill);
+            repaint();
 
-        else {
-            System.out.println("No entró al if");
+            // Agregar vecinos
+            pointsToFill.add(new Point(x, y - 1)); // Arriba
+            pointsToFill.add(new Point(x + 1, y)); // Derecha
+            pointsToFill.add(new Point(x, y + 1)); // Abajo
+            pointsToFill.add(new Point(x - 1, y)); // Izquierda
         }
     }
-    
-    // Verifica si un píxel es parte del borde del polígono
-    private boolean isEdgePixel(int x, int y, Color targetColor) {
-        // Obtener el color del píxel en la posición (x, y)
-        Color currentColor = new Color(buffer.getRGB(x, y));
-    
-        // Compara el color del píxel con el color de borde (asumiendo que el borde tiene un color específico)
-        return !currentColor.equals(targetColor);
+
+    public boolean findPixel(int x, int y, Color targetColor) {
+        if (x < 0 || y < 0 || x >= getWidth() || y >= getHeight()) {
+            // Verifica si las coordenadas están dentro de los límites de la ventana
+            return false;
+        }
+
+        int pixelColor = buffer.getRGB(x, y);
+        Color pixelColorObj = new Color(pixelColor);
+
+        return pixelColorObj.equals(targetColor);
     }
-     
 
     public static void main(String[] args) {
         Poligono poligono = new Poligono();
         poligono.setVisible(true);
-    
+
         int[] xPoints = {100, 200, 250, 350, 300, 200};
         int[] yPoints = {100, 50, 150, 200, 300, 250};
-    
+
         poligono.drawPolygon(xPoints, yPoints, Color.BLUE);
         poligono.fillPolygonScanLine(xPoints, yPoints, Color.RED);
-        
+
         int[] xPoints2 = {(100 + 300), (200 + 300), (250 + 300), (350 + 300), (400 + 300), (350 + 300), (250 + 300), (200 + 300), (100 + 300)};
         int[] yPoints2 = {100, 50, 150, 200, 300, 400, 350, 250, 200};
-        
-        
+
         int[] centroid = poligono.calculateCentroid(xPoints2, yPoints2);
         System.out.println("El centro del polígono está en: (" + centroid[0] + ", " + centroid[1] + ")");
 
         poligono.drawPolygon(xPoints2, yPoints2, Color.GREEN);
-        poligono.fillPolygonInundation(centroid[0], centroid[1], Color.PINK);
-    }    
+        poligono.fillPolygonInundation(centroid[0], centroid[1], Color.PINK, Color.GREEN);
+    }
 }
