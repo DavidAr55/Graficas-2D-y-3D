@@ -77,6 +77,48 @@ public class Poligono extends JFrame {
         repaint();
     }
 
+    public void drawRoundedPolygon(int[] xPoints, int[] yPoints, Color c, int cornerRadius) {
+        int numVertices = xPoints.length;
+    
+        for (int i = 0; i < numVertices; i++) {
+            int x1 = xPoints[i];
+            int y1 = yPoints[i];
+            int x2 = xPoints[(i + 1) % numVertices];
+            int y2 = yPoints[(i + 1) % numVertices];
+    
+            // Calcula la distancia entre los puntos x1, y1 y x2, y2
+            int distance = (int) Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+    
+            // Calcula el ángulo entre los puntos x1, y1 y x2, y2
+            double angle = Math.atan2(y2 - y1, x2 - x1);
+    
+            // Calcula los puntos de inicio y final de la línea con redondeo
+            int x1Rounded = x1 + (int) (cornerRadius * Math.cos(angle));
+            int y1Rounded = y1 + (int) (cornerRadius * Math.sin(angle));
+            int x2Rounded = x2 - (int) (cornerRadius * Math.cos(angle));
+            int y2Rounded = y2 - (int) (cornerRadius * Math.sin(angle));
+    
+            // Dibuja la línea redondeada
+            drawLineBresenham(x1Rounded, y1Rounded, x2Rounded, y2Rounded, c);
+    
+            // Dibuja los arcos de esquina
+            int arcWidth = 2 * cornerRadius;
+            int arcHeight = 2 * cornerRadius;
+            int startAngle = (int) Math.toDegrees(-angle);
+            int endAngle = 90 + (int) Math.toDegrees(-angle);
+    
+            graPixel.drawArc(x1 - cornerRadius, y1 - cornerRadius, arcWidth, arcHeight, startAngle, endAngle);
+            graPixel.drawArc(x2 - cornerRadius, y2 - cornerRadius, arcWidth, arcHeight, startAngle - 90, endAngle);
+    
+            // Conecta los arcos con líneas rectas
+            graPixel.drawLine(x1 - cornerRadius, y1, x2 - cornerRadius, y2);
+            graPixel.drawLine(x1 + cornerRadius, y1, x2 + cornerRadius, y2);
+        }
+    
+        repaint();
+    }
+    
+
     public void fillPolygonScanLine(int[] xPoints, int[] yPoints, Color c) {
         int minX = Integer.MAX_VALUE;
         int maxX = Integer.MIN_VALUE;
@@ -218,7 +260,9 @@ public class Poligono extends JFrame {
         int[] centroid = poligono.calculateCentroid(xPoints2, yPoints2);
         System.out.println("El centro del polígono está en: (" + centroid[0] + ", " + centroid[1] + ")");
 
-        poligono.drawPolygon(xPoints2, yPoints2, Color.GREEN);
-        poligono.fillPolygonInundation(centroid[0], centroid[1], Color.PINK, Color.GREEN);
+        // poligono.drawPolygon(xPoints2, yPoints2, Color.GREEN);
+        // poligono.fillPolygonInundation(centroid[0], centroid[1], Color.PINK, Color.GREEN);
+
+        poligono.drawRoundedPolygon(xPoints2, yPoints2, Color.GREEN, 10);;
     }
 }
