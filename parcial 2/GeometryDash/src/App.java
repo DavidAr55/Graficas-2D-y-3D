@@ -93,25 +93,13 @@ public class App {
         try {
             cubito.setText(200, 300, "Ohh! Que es eso?", Color.WHITE);
             Thread.sleep(1500);
-        } catch (Exception e) {
-            // TODO: handle exception
-        }
 
-        try {
             cubito.setText(200, 300, "Eso es un Spike, tienes que saltarlo", Color.decode("#87EE34"));
             Thread.sleep(1500);
-        } catch (Exception e) {
-            // TODO: handle exception
-        }
 
-        try {
             cubito.setText(200, 300, "Pero cuidado, puedes morir si lo tocas! D:", Color.decode("#87EE34"));
             Thread.sleep(1500);
-        } catch (Exception e) {
-            // TODO: handle exception
-        }
 
-        try {
             cubito.setText(200, 300, "Okey, intentare saltarlo", Color.WHITE);
             Thread.sleep(1500);
         } catch (Exception e) {
@@ -145,11 +133,7 @@ public class App {
         try {
             cubito.setText(200, 300, "Hey, Bien hecho!", Color.decode("#87EE34"));
             Thread.sleep(1500);
-        } catch (Exception e) {
-            // TODO: handle exception
-        }
 
-        try {
             cubito.setText(200, 300, "Gracias, eso fue facil", Color.WHITE);
             Thread.sleep(1500);
         } catch (Exception e) {
@@ -206,18 +190,10 @@ public class App {
         try {
             cubito.setText(200, 300, "Que te parece? subi un poco la dificultad", Color.decode("#87EE34"));
             Thread.sleep(1500);
-        } catch (Exception e) {
-            // TODO: handle exception
-        }
 
-        try {
             cubito.setText(200, 300, "ya veo...", Color.WHITE);
             Thread.sleep(1000);
-        } catch (Exception e) {
-            // TODO: handle exception
-        }
 
-        try {
             cubito.setText(200, 300, "Bueno, ahi vamos!", Color.WHITE);
             Thread.sleep(1000);
         } catch (Exception e) {
@@ -268,24 +244,15 @@ public class App {
         try {
             cubito.setText(200, 300, "crei que seria mas dificil", Color.WHITE);
             Thread.sleep(1000);
-        } catch (Exception e) {
-            // TODO: handle exception
-        }
 
-        try {
             cubito.setText(200, 300, "Veo que eres bueno, quieres aprender mas cosas?", Color.decode("#87EE34"));
             Thread.sleep(1500);
-        } catch (Exception e) {
-            // TODO: handle exception
-        }
 
-        try {
             cubito.setText(200, 300, "si, por que no?", Color.WHITE);
             Thread.sleep(1000);
         } catch (Exception e) {
             // TODO: handle exception
         }
-
 
         cubito.clearScreen(0, 0, cubito.getWidth(), 400);
         cubito.drawBackground();
