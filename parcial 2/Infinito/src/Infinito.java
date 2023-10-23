@@ -180,12 +180,12 @@ public class Infinito extends JFrame {
 
                 try {
                     Thread.sleep(5);
+                    putPixel(pixelX, pixelY, c);
+                    repaint();
+                    
                 } catch (Exception e) {
                     // TODO: handle exception
                 }
-
-                putPixel(pixelX, pixelY, c);
-                repaint();
             }
         }
     }
