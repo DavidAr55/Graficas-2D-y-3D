@@ -24,6 +24,8 @@ public class Poligono extends JFrame implements KeyListener {
     private Graphics2D graPixel;
     private Font customFont;
 
+    public Color bgColor = Color.decode("#2169D6");
+
     public Poligono() {
         super();
         
@@ -101,6 +103,15 @@ public class Poligono extends JFrame implements KeyListener {
 
         Graphics2D g2d = (Graphics2D) graPixel;
         g2d.setBackground(Color.decode("#2573EA"));
+        g2d.clearRect(0, 0, getWidth(), getHeight());
+    }
+
+    public void changeBgColor(Color c) {
+        buffer = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
+        graPixel = buffer.createGraphics();
+
+        Graphics2D g2d = (Graphics2D) graPixel;
+        g2d.setBackground(c);
         g2d.clearRect(0, 0, getWidth(), getHeight());
     }
 
@@ -221,7 +232,7 @@ public class Poligono extends JFrame implements KeyListener {
 
     public void drawBackground() {
 
-        Color backgroundColor = Color.decode("#2169D6");
+        Color backgroundColor = bgColor;
 
         int[] bg1x = {0, 300, 300, 0};
         int[] bg1y = {0, 0, 200, 200};

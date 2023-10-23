@@ -223,5 +223,138 @@ public class App {
         } catch (Exception e) {
             // TODO: handle exception
         }
+
+        cubito.clearScreen(0, 0, cubito.getWidth(), 400);
+        cubito.drawBackground();
+
+        centerCube = new int[] {cubito.getX(), cubito.getY()};
+        xCords = cubito.getXCube();
+        yCords = cubito.getYCube();
+
+        cubito.movingCubeWithMatrix(xCords, yCords, cubito.getColors(), 5, 0, 75, true, true);
+
+
+        centerCube = new int[] {cubito.getX(), cubito.getY()};
+        xCords = cubito.getXCube();
+        yCords = cubito.getYCube();
+
+        cubito.movingCubeWithMatrix(xCords, yCords, cubito.getColors(), 5, -5, 55, true, true);
+
+
+        centerCube = new int[] {cubito.getX(), cubito.getY()};
+        xCords = cubito.getXCube();
+        yCords = cubito.getYCube();
+
+        cubito.rotatingPoligonWithMatrix(xCords, yCords, cubito.getColors(), centerCube, 360, 1);
+        cubito.clearAllScreen();
+        cubito.resetCube(750, 475);;
+        cubito.fillPolygonScanLine(xSpikes[0], ySpikes[0], Color.WHITE);
+        cubito.fillPolygonScanLine(xSpikes[1], ySpikes[1], Color.BLACK);
+
+        cubito.fillPolygonScanLine(xSpikes[2], ySpikes[2], Color.WHITE);
+        cubito.fillPolygonScanLine(xSpikes[3], ySpikes[3], Color.BLACK);
+
+        cubito.fillPolygonScanLine(xSpikes[4], ySpikes[4], Color.WHITE);
+        cubito.fillPolygonScanLine(xSpikes[5], ySpikes[5], Color.BLACK);
+        
+
+        centerCube = new int[] {cubito.getX(), cubito.getY()};
+        xCords = cubito.getXCube();
+        yCords = cubito.getYCube();
+
+        cubito.movingCubeWithMatrix(xCords, yCords, cubito.getColors(), 5, 5, 55, true, true);
+
+
+        try {
+            cubito.setText(200, 300, "crei que seria mas dificil", Color.WHITE);
+            Thread.sleep(1000);
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
+
+        try {
+            cubito.setText(200, 300, "Veo que eres bueno, quieres aprender mas cosas?", Color.decode("#87EE34"));
+            Thread.sleep(1500);
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
+
+        try {
+            cubito.setText(200, 300, "si, por que no?", Color.WHITE);
+            Thread.sleep(1000);
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
+
+
+        cubito.clearScreen(0, 0, cubito.getWidth(), 400);
+        cubito.drawBackground();
+
+
+        centerCube = new int[] {cubito.getX(), cubito.getY()};
+        xCords = cubito.getXCube();
+        yCords = cubito.getYCube();
+
+        cubito.movingCubeWithMatrix(xCords, yCords, cubito.getColors(), 5, 0, 100, true, true);
+
+
+        xWall = new int[][] {{-1500, 0, 0, -1500}};
+        yWall = new int[][] {{0, 0, 900, 900}};
+
+        cubito.movingCubeWithMatrix(xWall, yWall, cWall, 40, 0, 90, false, false);
+
+        cubito.bgColor = Color.decode("#A41FEB");
+        cubito.changeBgColor(Color.decode("#C064F9"));
+
+        cubito.clearAllScreen();
+        cubito.drawBackground();
+
+        cubito.resetCube(100, 750);
+        
+        centerCube = new int[] {cubito.getX(), cubito.getY()};
+        xCords = cubito.getXCube();
+        yCords = cubito.getYCube();
+
+        cubito.scalingWithMatrix(xCords, yCords, cubito.getColors(), .5, 20);
+
+        try {
+            cubito.setText(200, 300, "Ahora eres mas chiquito", Color.decode("#87EE34"));
+            Thread.sleep(1000);
+
+            cubito.setText(200, 300, "WTF, que le paso a mis ojos???", Color.WHITE);
+            Thread.sleep(1000);
+
+            cubito.setText(200, 300, "Ups, parece que hubo un error de adyacencia ", Color.decode("#87EE34"));
+            Thread.sleep(100);
+            cubito.setText(200, 300, "en el reductor cuantico jeje, ya lo arreglo", Color.decode("#87EE34"));
+            Thread.sleep(1000);
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
+
+        centerCube = new int[] {cubito.getX(), cubito.getY()};
+        xCords = cubito.getXCube();
+        yCords = cubito.getYCube();
+
+        cubito.scalingWithMatrix(xCords, yCords, cubito.getColors(), 1.35, 20);
+
+        try {
+            cubito.setText(200, 300, "Gracias, y de que me sirve ser mas chiquito?", Color.WHITE);
+            Thread.sleep(1000);
+            
+            cubito.setText(200, 300, "Ahora puedes entrar en espacios mas chicos", Color.decode("#87EE34"));
+            Thread.sleep(1000);
+
+            cubito.setText(200, 300, "Y.... ya?", Color.WHITE);
+            Thread.sleep(1000);
+
+            cubito.setText(200, 300, "Si, esperabas mas?", Color.decode("#87EE34"));
+            Thread.sleep(1000);
+
+            cubito.setText(200, 300, "Solo... olvidalo, voy a intentarlo", Color.WHITE);
+            Thread.sleep(1000);
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
     }
 }
