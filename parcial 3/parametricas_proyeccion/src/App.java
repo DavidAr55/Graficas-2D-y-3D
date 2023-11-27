@@ -87,7 +87,7 @@ public class App extends JFrame {
             y[i] = Math.sin(tz[i]);
         }
     
-        double[] vp = {1, 1, 15};
+        double[] vp = {0, 2, 15};
         double[] u = new double[numPuntos];
         double[] xp = new double[numPuntos];
         double[] yp = new double[numPuntos];
@@ -147,29 +147,19 @@ public class App extends JFrame {
             System.out.println("X: " + xProjected);
             System.out.println("Y: " + yProjected);
             System.out.println();
-    
-            fillEllipseScanLine(xProjected, yProjected, 3, 3, Color.RED);
-    
-            if (i > 0) {
-                int xPrev = (int) (puntos[i - 1][0] * u[i - 1] * scale) + getWidth() / 2;
-                int yPrev = (int) (puntos[i - 1][1] * u[i - 1] * scale) + getHeight() / 2;
 
-                try {
-                    Thread.sleep(1000);
-                    drawLineBresenham(xPrev, yPrev, xProjected, yProjected, Color.BLUE);
-                } catch (Exception e) {
-                    // TODO: handle exception
-                }
+            Color cubePoint = Color.RED;
+
+            if(i < 4)   cubePoint = Color.RED;
+            else        cubePoint = Color.BLUE;
+    
+            try {
+                Thread.sleep(0);
+                fillEllipseScanLine(xProjected, yProjected, 3, 3, cubePoint);
+            } catch (Exception e) {
+                // TODO: handle exception
             }
         }
-    
-        int lastX = (int) (puntos[0][0] * u[0] * scale) + getWidth() / 2;
-        int lastY = (int) (puntos[0][1] * u[0] * scale) + getHeight() / 2;
-    
-        int finalX = (int) (puntos[puntos.length - 1][0] * u[puntos.length - 1] * scale) + getWidth() / 2;
-        int finalY = (int) (puntos[puntos.length - 1][1] * u[puntos.length - 1] * scale) + getHeight() / 2;
-    
-        drawLineBresenham(finalX, finalY, lastX, lastY, Color.BLUE);
     
         repaint();
     }
@@ -183,7 +173,7 @@ public class App extends JFrame {
         App app = new App();
         app.setVisible(true);
 
-        // app.curvaResorte();
-        app.printCube();
+        app.curvaResorte();
+        // app.printCube();
     }
 }
