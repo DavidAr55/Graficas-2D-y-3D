@@ -9,10 +9,13 @@ import java.awt.image.BufferedImage;
 public class VertexCube extends JFrame implements KeyListener {
 
     private BufferedImage buffer;
-    private Graphics2D graPixel;
-    private double anguloX = 0; // Angulo de rotación en el eje X
-    private double anguloY = 0; // Angulo de rotación en el eje Y
-    private double anguloZ = 0; // Angulo de rotación en el eje Z
+    private Graphics2D Poligono3D;
+    private double anguloX = 0; // Ángulo de rotación en el eje X
+    private double anguloY = 0; // Ángulo de rotación en el eje Y
+    private double anguloZ = 0; // Ángulo de rotación en el eje Z
+    private double traslacionX = 0; // Traslación en el eje X
+    private double traslacionY = 0; // Traslación en el eje Y
+    private double escala = 1.0; // Factor de escala
     private boolean rotarX = false;
     private boolean rotarY = false;
     private boolean rotarZ = false;
@@ -22,14 +25,19 @@ public class VertexCube extends JFrame implements KeyListener {
         setSize(1000, 900);
         setLocationRelativeTo(null);
 
-        buffer = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
-        graPixel = buffer.createGraphics();
+        // Configurar el enfoque del componente para recibir eventos de teclado
+        setFocusable(true);
+        requestFocusInWindow();
+        addKeyListener(this);  // Agregar el escuchador de teclas
 
-        Graphics2D g2d = (Graphics2D) graPixel;
+        buffer = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
+        Poligono3D = buffer.createGraphics();
+
+        Graphics2D g2d = (Graphics2D) Poligono3D;
         g2d.setBackground(Color.WHITE);
         g2d.clearRect(0, 0, getWidth(), getHeight());
 
-        addKeyListener(this);  // Agregar el escuchador de teclas
+        addKeyListener(this); // Agregar el escuchador de teclas
 
         // Configurar temporizador para la rotación continua
         Timer timer = new Timer(20, new ActionListener() {
@@ -48,12 +56,44 @@ public class VertexCube extends JFrame implements KeyListener {
             }
         });
         timer.start();
+
+        // Crear botones y agregar escuchadores de eventos
+        JButton btnTraslacion = new JButton("Mover");
+        btnTraslacion.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                traslacionX += 10; // Ajusta el valor de traslación según sea necesario
+                dibujarCubo();
+            }
+        });
+
+        JButton btnEscala = new JButton("Hacer más pequeño");
+        btnEscala.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                escala *= 0.9; // Ajusta el factor de escala según sea necesario
+                dibujarCubo();
+            }
+        });
+
+        // Crear panel para los botones
+        JPanel panelBotones = new JPanel();
+        panelBotones.add(btnTraslacion);
+        panelBotones.add(btnEscala);
+
+        // Agregar el panel de botones al JFrame
+        add(panelBotones, BorderLayout.SOUTH);
     }
 
     public void putPixel(int x, int y, Color c) {
         if (x >= 0 && x < getWidth() && y >= 0 && y < getHeight()) {
             buffer.setRGB(x, y, c.getRGB());
         }
+    }
+
+    public void clearScreen() {
+        // Limpiar el buffer antes de volver a dibujar
+        Poligono3D.clearRect(0, 0, getWidth(), getHeight());
     }
 
     // Algoritmo de Bresenham para dibujar una línea
@@ -110,53 +150,124 @@ public class VertexCube extends JFrame implements KeyListener {
         return resultado;
     }
 
-    // Función para dibujar un cubo en 3D y proyectarlo a 2D con rotación
+    // Función para aplicar una traslación a un punto 3D
+    private int[] trasladar(int x, int y, int z, double traslacionX, double traslacionY) {
+        int[] resultado = new int[3];
+        resultado[0] = (int) (x + traslacionX);
+        resultado[1] = (int) (y + traslacionY);
+        resultado[2] = z;
+        return resultado;
+    }
+
+    // Función para aplicar una escala a un punto 3D
+    private int[] escalar(int x, int y, int z, double escala) {
+        int[] resultado = new int[3];
+        resultado[0] = (int) (x * escala);
+        resultado[1] = (int) (y * escala);
+        resultado[2] = (int) (z * escala);
+        return resultado;
+    }
+
+    // Función para dibujar un cubo en 3D y proyectarlo a 2D con transformaciones
     public void dibujarCubo() {
         // Definir los vértices del cubo en 3D
         int[][] vertices = {
-                {100, 100, 100},
-                {100, 100, -100},
-                {100, -100, 100},
-                {100, -100, -100},
-                {-100, 100, 100},
-                {-100, 100, -100},
-                {-100, -100, 100},
-                {-100, -100, -100}
+                { 100, 100, 100 },
+                { 100, 100, -100 },
+                { 100, -100, 100 },
+                { 100, -100, -100 },
+                { -100, 100, 100 },
+                { -100, 100, -100 },
+                { -100, -100, 100 },
+                { -100, -100, -100 }
         };
 
-        // Cambiar la posición de la cámara (punto de perspectiva)
+        // Definir las caras del cubo
+        int[][] caras = {
+                { 0, 1, 3, 2 }, // Cara frontal
+                { 4, 5, 7, 6 }, // Cara trasera
+                { 0, 1, 5, 4 }, // Cara superior
+                { 2, 3, 7, 6 }, // Cara inferior
+                { 0, 2, 6, 4 }, // Cara izquierda
+                { 1, 3, 7, 5 } // Cara derecha
+        };
+
         int puntoDePerspectiva = 500;
 
-        // Aplicar rotación a los vértices según las teclas presionadas
+        // Aplicar transformaciones a los vértices según las teclas presionadas y
+        // botones
         for (int i = 0; i < vertices.length; i++) {
-            int[] resultadoRotacion = vertices[i];
-            resultadoRotacion = rotarX(resultadoRotacion[0], resultadoRotacion[1], resultadoRotacion[2], anguloX);
-            resultadoRotacion = rotarY(resultadoRotacion[0], resultadoRotacion[1], resultadoRotacion[2], anguloY);
-            resultadoRotacion = rotarZ(resultadoRotacion[0], resultadoRotacion[1], resultadoRotacion[2], anguloZ);
-            vertices[i][0] = resultadoRotacion[0];
-            vertices[i][1] = resultadoRotacion[1];
-            vertices[i][2] = resultadoRotacion[2];
+            int[] resultadoTransformacion = vertices[i];
+            resultadoTransformacion = rotarX(resultadoTransformacion[0], resultadoTransformacion[1],
+                    resultadoTransformacion[2], anguloX);
+            resultadoTransformacion = rotarY(resultadoTransformacion[0], resultadoTransformacion[1],
+                    resultadoTransformacion[2], anguloY);
+            resultadoTransformacion = rotarZ(resultadoTransformacion[0], resultadoTransformacion[1],
+                    resultadoTransformacion[2], anguloZ);
+            resultadoTransformacion = trasladar(resultadoTransformacion[0], resultadoTransformacion[1],
+                    resultadoTransformacion[2], traslacionX, traslacionY);
+            resultadoTransformacion = escalar(resultadoTransformacion[0], resultadoTransformacion[1],
+                    resultadoTransformacion[2], escala);
+            vertices[i][0] = resultadoTransformacion[0];
+            vertices[i][1] = resultadoTransformacion[1];
+            vertices[i][2] = resultadoTransformacion[2];
         }
 
-        // Limpiar el buffer antes de volver a dibujar
-        graPixel.clearRect(0, 0, getWidth(), getHeight());
+        clearScreen();
 
-        // Proyectar los vértices en 2D y dibujar las líneas del cubo
-        for (int i = 0; i < vertices.length; i++) {
-            int x = (vertices[i][0] * puntoDePerspectiva) / (vertices[i][2] + puntoDePerspectiva) + getWidth() / 2;
-            int y = (vertices[i][1] * puntoDePerspectiva) / (vertices[i][2] + puntoDePerspectiva) + getHeight() / 2;
+        // Proyectar los vértices en 2D y dibujar las caras del cubo
+        for (int i = 0; i < caras.length; i++) {
+            int[] cara = caras[i];
+            int[] puntosX = new int[cara.length];
+            int[] puntosY = new int[cara.length];
 
-            // Conectar los vértices para formar el cubo
-            for (int j = i + 1; j < vertices.length; j++) {
-                int x2 = (vertices[j][0] * puntoDePerspectiva) / (vertices[j][2] + puntoDePerspectiva) + getWidth() / 2;
-                int y2 = (vertices[j][1] * puntoDePerspectiva) / (vertices[j][2] + puntoDePerspectiva) + getHeight() / 2;
+            for (int j = 0; j < cara.length; j++) {
+                int x = (vertices[cara[j]][0] * puntoDePerspectiva) / (vertices[cara[j]][2] + puntoDePerspectiva)
+                        + getWidth() / 2;
+                int y = (vertices[cara[j]][1] * puntoDePerspectiva) / (vertices[cara[j]][2] + puntoDePerspectiva)
+                        + getHeight() / 2;
+                puntosX[j] = x;
+                puntosY[j] = y;
+            }
 
-                drawLineBresenham(x, y, x2, y2, Color.BLACK);
+            // Rellenar la cara con un color
+            Color colorCara = obtenerColorCara(i);
+            Poligono3D.setColor(colorCara);
+            Poligono3D.fillPolygon(puntosX, puntosY, cara.length);
+
+            // Dibujar los bordes de la cara
+            Poligono3D.setColor(Color.BLACK);
+            for (int j = 0; j < cara.length; j++) {
+                int x1 = puntosX[j];
+                int y1 = puntosY[j];
+                int x2 = puntosX[(j + 1) % cara.length];
+                int y2 = puntosY[(j + 1) % cara.length];
+                drawLineBresenham(x1, y1, x2, y2, Color.BLACK);
             }
         }
 
         // Repintar el JFrame para mostrar el cubo
         repaint();
+    }
+
+    // Función para obtener el color de una cara según su índice
+    private Color obtenerColorCara(int indiceCara) {
+        switch (indiceCara) {
+            case 0:
+                return Color.RED; // Cara frontal
+            case 1:
+                return Color.RED; // Cara trasera
+            case 2:
+                return Color.RED; // Cara superior
+            case 3:
+                return Color.RED; // Cara inferior
+            case 4:
+                return Color.RED; // Cara izquierda
+            case 5:
+                return Color.RED; // Cara derecha
+            default:
+                return Color.RED;
+        }
     }
 
     @Override
@@ -172,18 +283,29 @@ public class VertexCube extends JFrame implements KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        // Capturar teclas presionadas y ajustar los estados de rotación
+        // Capturar teclas presionadas y ajustar los estados de transformación
         if (e.getKeyChar() == 'x' && !rotarX) {
             rotarX = true;
         } else if (e.getKeyChar() == 'y' && !rotarY) {
             rotarY = true;
         } else if (e.getKeyChar() == 'z' && !rotarZ) {
             rotarZ = true;
+        } else if (e.getKeyChar() == 't') {
+            // Tecla "T" para activar traslación
+            traslacionX += 10; // Ajusta el valor de traslación según sea necesario
+            dibujarCubo();
+        } else if (e.getKeyChar() == 's') {
+            // Tecla "S" para activar escalación
+            escala *= 0.9; // Ajusta el factor de escala según sea necesario
+            dibujarCubo();
         } else if (e.getKeyCode() == KeyEvent.VK_SPACE) {
             // Restaurar el cubo a su posición estática
             anguloX = 0;
             anguloY = 0;
             anguloZ = 0;
+            traslacionX = 0;
+            traslacionY = 0;
+            escala = 1.0;
             rotarX = false;
             rotarY = false;
             rotarZ = false;
@@ -197,7 +319,7 @@ public class VertexCube extends JFrame implements KeyListener {
     }
 
     public static void main(String[] args) throws Exception {
-        VertexCube sombreador = new VertexCube();
-        sombreador.setVisible(true);
+        VertexCube VertexCube = new VertexCube();
+        VertexCube.setVisible(true);
     }
 }
