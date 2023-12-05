@@ -15,7 +15,7 @@ public class Main {
                 
                 poligono.clearScreen();
                 poligono.renderCube(i, 300);
-                Thread.sleep(5);
+                Thread.sleep(50);
                 poligono.repaint();
 
             } catch (Exception e) {

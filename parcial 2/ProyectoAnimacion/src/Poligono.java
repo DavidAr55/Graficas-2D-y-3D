@@ -4,9 +4,6 @@ import java.util.List;
 
 public class Poligono extends Pixel {
 
-    private int[] x;
-    private int[] y;
-
     public Poligono() {
 
         super();
