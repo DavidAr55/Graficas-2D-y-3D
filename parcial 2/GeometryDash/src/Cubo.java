@@ -161,7 +161,7 @@ public class Cubo extends Poligono {
                                     {48, 48, 67, 67}, 
                                     {52, 52, 62, 62}};
 
-        // Centramos nuestro Cubo en las coordenacas xCenter & yCenter
+        // Centramos nuestro Cuadrado en las coordenacas xCenter & yCenter
         for(int i = 0; i < xCube.length; i++) {
             for(int j = 0; j < xCube[i].length; j++) {
                 this.xCube[i][j] += (x - 50);

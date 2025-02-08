@@ -173,7 +173,7 @@ public class App extends JFrame {
         App app = new App();
         app.setVisible(true);
 
-        app.curvaResorte();
-        // app.printCube();
+        // app.curvaResorte();
+        app.printCube();
     }
 }
